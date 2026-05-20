@@ -1,0 +1,1453 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mapa de Consumidores — GÉNESIS XP</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+:root {
+  --void:    #04040a;
+  --deep:    #08081a;
+  --mid:     #0d0d28;
+  --snow:    #f0eee8;
+  --dim:     rgba(240,238,232,0.35);
+  --dimmer:  rgba(240,238,232,0.10);
+  --gold:    #c9943a;
+  --gold2:   #e8b85a;
+  --gold3:   #f5d68a;
+  --teal:    #1a8f8f;
+  --teal2:   #22b5b5;
+  --violet:  #6b4faa;
+  --violet2: #9b7fdc;
+  --coral:   #c0452a;
+  --coral2:  #e06040;
+  --green:   #2a7a4a;
+  --green2:  #3ab068;
+  --rose:    #a03060;
+  --rose2:   #d06090;
+  --slate:   #3060a0;
+  --slate2:  #5090d0;
+}
+
+html { font-size: 16px; scroll-behavior: smooth; }
+
+body {
+  background: var(--void);
+  color: var(--snow);
+  font-family: 'DM Mono', monospace;
+  overflow-x: hidden;
+  min-height: 100vh;
+  line-height: 1.6;
+}
+
+#cosmos {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.wrap {
+  position: relative;
+  z-index: 1;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem 4rem;
+}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+@keyframes glow {
+  0%, 100% { box-shadow: 0 0 5px var(--gold); }
+  50% { box-shadow: 0 0 20px var(--gold); }
+}
+
+/* ── HERO ── */
+.hero {
+  min-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 3rem 0 2rem;
+}
+
+.hero-eyebrow {
+  font-size: .58rem;
+  letter-spacing: .35em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 1.5rem;
+  animation: fadeIn 1.5s ease both;
+}
+
+.hero-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(2.5rem, 8vw, 4.5rem);
+  font-weight: 300;
+  letter-spacing: -.02em;
+  line-height: .95;
+  margin-bottom: 1.5rem;
+  animation: fadeIn 1.5s ease .2s both;
+}
+.hero-title em { color: var(--gold3); font-style: italic; }
+
+.hero-subtitle {
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-size: clamp(.95rem, 2.2vw, 1.25rem);
+  color: var(--dim);
+  max-width: 750px;
+  line-height: 1.6;
+  margin-bottom: 2.5rem;
+  animation: fadeIn 1.5s ease .4s both;
+}
+
+/* ── PROGRESS INDICATOR ── */
+.progress-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin: 2rem 0 3rem;
+  animation: fadeIn 1.5s ease .6s both;
+}
+
+.progress-step {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  font-size: .75rem;
+  color: var(--dim);
+  transition: all .3s;
+}
+
+.progress-step.active {
+  color: var(--gold2);
+}
+
+.progress-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--dimmer);
+  transition: all .3s;
+}
+
+.progress-step.active .progress-dot {
+  background: var(--gold2);
+  box-shadow: 0 0 12px var(--gold);
+  animation: pulse 2s infinite;
+}
+
+.progress-step.completed .progress-dot {
+  background: var(--green2);
+}
+
+.progress-line {
+  width: 40px;
+  height: 1px;
+  background: var(--dimmer);
+}
+
+/* ── SECTION ── */
+.section {
+  margin: 3rem 0;
+  animation: fadeIn 1.5s ease both;
+}
+
+.sec-kicker {
+  font-size: .55rem;
+  letter-spacing: .3em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 1rem;
+}
+
+.sec-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(1.6rem, 4vw, 2.5rem);
+  font-weight: 400;
+  line-height: 1.1;
+  margin-bottom: 1rem;
+}
+.sec-title em { color: var(--gold2); font-style: italic; }
+
+.sec-body {
+  color: var(--dim);
+  font-size: .92rem;
+  line-height: 1.7;
+  max-width: 720px;
+  margin-bottom: 2rem;
+}
+
+/* ── SECTORS QUICK SELECT ── */
+.sectors-quick {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1px;
+  background: var(--dimmer);
+  border: 1px solid var(--dimmer);
+  margin-bottom: 3rem;
+}
+
+.sector-quick-btn {
+  background: var(--void);
+  padding: 1.2rem 1rem;
+  border: none;
+  cursor: pointer;
+  transition: all .3s;
+  text-align: center;
+  color: var(--snow);
+  font-family: 'DM Mono', monospace;
+  font-size: .8rem;
+  position: relative;
+}
+
+.sector-quick-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: transparent;
+  transition: all .3s;
+}
+
+.sector-quick-btn:hover {
+  background: rgba(240,238,232,.04);
+}
+
+.sector-quick-btn:hover::before {
+  background: var(--gold);
+  height: 3px;
+}
+
+.sector-quick-btn.active {
+  background: var(--mid);
+}
+
+.sector-quick-btn.active::before {
+  background: var(--gold2);
+  height: 3px;
+}
+
+.sector-emoji-small {
+  font-size: 1.5rem;
+  display: block;
+  margin-bottom: .5rem;
+}
+
+/* ── SELECTED CONTEXT ── */
+.context-panel {
+  display: none;
+  background: linear-gradient(135deg, var(--deep) 0%, var(--mid) 100%);
+  border: 1px solid var(--dimmer);
+  padding: 2rem;
+  border-radius: 4px;
+  margin-bottom: 2.5rem;
+  position: relative;
+  overflow: hidden;
+  animation: slideUp .5s ease both;
+}
+
+.context-panel.active {
+  display: block;
+}
+
+.context-panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--gold) 0%, var(--gold2) 50%, var(--gold3) 100%);
+}
+
+.context-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.context-emoji {
+  font-size: 2.5rem;
+}
+
+.context-text h2 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(1.5rem, 3.5vw, 2rem);
+  font-weight: 400;
+  line-height: 1.1;
+  margin-bottom: .5rem;
+}
+
+.context-component {
+  color: var(--gold2);
+  font-size: .85rem;
+}
+
+.context-problem {
+  color: var(--dim);
+  font-size: .9rem;
+  line-height: 1.6;
+  padding: 1rem;
+  background: var(--void);
+  border-left: 3px solid var(--gold);
+  margin-top: 1rem;
+}
+
+/* ── CONSUMER CATEGORIES ── */
+.consumer-categories {
+  display: none;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+.consumer-categories.active {
+  display: grid;
+  animation: slideUp .6s ease both;
+}
+
+.category-card {
+  background: var(--deep);
+  border: 1px solid var(--dimmer);
+  border-radius: 4px;
+  padding: 0;
+  transition: all .3s;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.category-card:hover {
+  border-color: rgba(240,238,232,.2);
+  transform: translateY(-3px);
+}
+
+.category-header {
+  padding: 1.5rem;
+  background: var(--void);
+  border-bottom: 1px solid var(--dimmer);
+}
+
+.category-icon-large {
+  font-size: 2.5rem;
+  margin-bottom: .8rem;
+  display: block;
+}
+
+.category-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.5rem;
+  font-weight: 400;
+  color: var(--snow);
+  margin-bottom: .5rem;
+}
+
+.category-subtitle {
+  font-size: .82rem;
+  color: var(--dim);
+}
+
+.category-body {
+  padding: 1.5rem;
+}
+
+.category-description {
+  color: var(--dim);
+  font-size: .88rem;
+  line-height: 1.6;
+  margin-bottom: 1.2rem;
+}
+
+.consumer-count {
+  font-size: .75rem;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 1rem;
+}
+
+/* ── CONSUMERS MODAL ── */
+.consumers-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(4, 4, 10, 0.95);
+  z-index: 100;
+  padding: 2rem;
+  overflow-y: auto;
+  animation: fadeIn .3s ease both;
+}
+
+.consumers-modal.active {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.consumers-modal-content {
+  background: var(--deep);
+  border: 1px solid var(--dimmer);
+  border-radius: 4px;
+  max-width: 1000px;
+  width: 100%;
+  margin: 2rem auto;
+  position: relative;
+  animation: slideUp .4s ease both;
+}
+
+.consumers-modal-header {
+  padding: 2rem;
+  border-bottom: 1px solid var(--dimmer);
+  position: relative;
+}
+
+.consumers-modal-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--teal) 0%, var(--teal2) 100%);
+}
+
+.close-modal {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  background: transparent;
+  border: 1px solid var(--dimmer);
+  color: var(--snow);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all .3s;
+}
+
+.close-modal:hover {
+  border-color: var(--coral);
+  color: var(--coral);
+}
+
+.modal-category-icon {
+  font-size: 3rem;
+  margin-bottom: .8rem;
+}
+
+.modal-category-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2.2rem;
+  font-weight: 400;
+  margin-bottom: .5rem;
+}
+
+.modal-category-context {
+  color: var(--gold2);
+  font-size: .85rem;
+  margin-bottom: 1rem;
+}
+
+.consumers-modal-body {
+  padding: 2rem;
+}
+
+.consumers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.consumer-card {
+  background: var(--void);
+  border: 1px solid var(--dimmer);
+  border-left: 3px solid var(--dimmer);
+  padding: 1.2rem;
+  border-radius: 3px;
+  transition: all .3s;
+  cursor: pointer;
+  position: relative;
+}
+
+.consumer-card:hover {
+  border-left-color: var(--gold);
+  background: rgba(240,238,232,.02);
+  transform: translateX(3px);
+}
+
+.consumer-card.selected {
+  border-left-color: var(--green2);
+  background: rgba(58, 176, 104, 0.05);
+}
+
+.consumer-card.selected::after {
+  content: '✓';
+  position: absolute;
+  top: .8rem;
+  right: .8rem;
+  width: 24px;
+  height: 24px;
+  background: var(--green2);
+  color: var(--void);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: .9rem;
+  font-weight: bold;
+}
+
+.consumer-icon {
+  font-size: 1.8rem;
+  margin-bottom: .6rem;
+  display: block;
+}
+
+.consumer-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.15rem;
+  font-weight: 400;
+  margin-bottom: .5rem;
+  color: var(--snow);
+}
+
+.consumer-description {
+  color: var(--dim);
+  font-size: .82rem;
+  line-height: 1.5;
+  margin-bottom: .8rem;
+}
+
+.consumer-pain-points {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .4rem;
+}
+
+.pain-tag {
+  font-size: .7rem;
+  padding: .3rem .6rem;
+  background: var(--mid);
+  border: 1px solid var(--dimmer);
+  border-radius: 3px;
+  color: var(--coral2);
+}
+
+/* ── ECOSYSTEM MAP ── */
+.ecosystem-map {
+  display: none;
+  background: var(--deep);
+  border: 1px solid var(--gold);
+  border-radius: 4px;
+  padding: 2rem;
+  margin-top: 3rem;
+  animation: slideUp .5s ease both;
+}
+
+.ecosystem-map.active {
+  display: block;
+}
+
+.ecosystem-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.ecosystem-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2rem;
+  font-weight: 400;
+  margin-bottom: 1rem;
+  color: var(--gold2);
+}
+
+.ecosystem-subtitle {
+  color: var(--dim);
+  font-size: .92rem;
+  line-height: 1.6;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.ecosystem-visual {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.ecosystem-center {
+  text-align: center;
+  padding: 2rem;
+  background: linear-gradient(135deg, var(--mid) 0%, var(--deep) 100%);
+  border: 2px solid var(--gold);
+  border-radius: 4px;
+}
+
+.ecosystem-center-label {
+  font-size: .7rem;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: .8rem;
+}
+
+.ecosystem-center-content {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.5rem;
+  font-weight: 400;
+  color: var(--snow);
+}
+
+.ecosystem-consumers {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.ecosystem-consumer-card {
+  background: var(--void);
+  border: 1px solid var(--dimmer);
+  border-left: 3px solid var(--green2);
+  padding: 1.2rem;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.ecosystem-consumer-icon {
+  font-size: 2rem;
+}
+
+.ecosystem-consumer-info {
+  flex: 1;
+}
+
+.ecosystem-consumer-name {
+  font-size: .9rem;
+  font-weight: 500;
+  margin-bottom: .3rem;
+  color: var(--snow);
+}
+
+.ecosystem-consumer-type {
+  font-size: .75rem;
+  color: var(--dim);
+}
+
+.ecosystem-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.ecosystem-btn {
+  padding: 1rem 2rem;
+  font-family: 'DM Mono', monospace;
+  font-size: .85rem;
+  cursor: pointer;
+  border-radius: 3px;
+  transition: all .3s;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  border: none;
+}
+
+.btn-secondary {
+  background: transparent;
+  border: 1px solid var(--dimmer);
+  color: var(--snow);
+}
+
+.btn-secondary:hover {
+  border-color: var(--gold);
+  background: rgba(201, 148, 58, 0.1);
+}
+
+.btn-primary {
+  background: var(--gold);
+  color: var(--void);
+  font-weight: 500;
+}
+
+.btn-primary:hover {
+  background: var(--gold2);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(201, 148, 58, 0.3);
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  .wrap { padding: 0 1.5rem 3rem; }
+  .sectors-quick { grid-template-columns: repeat(2, 1fr); }
+  .consumer-categories { grid-template-columns: 1fr; }
+  .consumers-grid { grid-template-columns: 1fr; }
+  .ecosystem-consumers { grid-template-columns: 1fr; }
+  .progress-bar { flex-wrap: wrap; }
+  .consumers-modal { padding: 1rem; }
+  .ecosystem-actions { flex-direction: column; }
+}
+
+canvas {
+  display: block;
+}
+</style>
+</head>
+<body>
+
+<canvas id="cosmos"></canvas>
+
+<div class="wrap">
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-eyebrow">GÉNESIS XP · Módulo de Exploración — Paso 3</div>
+    <h1 class="hero-title">Identifica tu <em>Ecosistema</em></h1>
+    <p class="hero-subtitle">
+      Cada problema tiene consumidores específicos que lo experimentan. <em>Descubre quiénes son las personas reales detrás de tu oportunidad.</em> Tu propuesta diferenciada nace de entender profundamente a quién sirves.
+    </p>
+  </section>
+
+  <!-- PROGRESS BAR -->
+  <div class="progress-bar">
+    <div class="progress-step completed">
+      <span class="progress-dot"></span>
+      <span>Contexto</span>
+    </div>
+    <div class="progress-line"></div>
+    <div class="progress-step completed">
+      <span class="progress-dot"></span>
+      <span>Problema</span>
+    </div>
+    <div class="progress-line"></div>
+    <div class="progress-step active">
+      <span class="progress-dot"></span>
+      <span>Consumidores</span>
+    </div>
+    <div class="progress-line"></div>
+    <div class="progress-step">
+      <span class="progress-dot"></span>
+      <span>Propuesta</span>
+    </div>
+  </div>
+
+  <!-- SECTION INTRO -->
+  <section class="section">
+    <div class="sec-kicker">01 · El problema tiene rostro</div>
+    <h2 class="sec-title">¿Quiénes experimentan <em>este problema específico?</em></h2>
+    <p class="sec-body">
+      Los consumidores no son abstracciones. Son personas reales con necesidades no resueltas, puntos de dolor específicos y contextos únicos. Identifica primero el sector donde exploraste el problema.
+    </p>
+  </section>
+
+  <!-- QUICK SECTOR SELECTOR -->
+  <div class="sectors-quick" id="sectorsQuick"></div>
+
+  <!-- CONTEXT PANEL -->
+  <div class="context-panel" id="contextPanel">
+    <div class="context-header">
+      <span class="context-emoji" id="contextEmoji"></span>
+      <div class="context-text">
+        <h2 id="contextSector"></h2>
+        <div class="context-component" id="contextComponent"></div>
+      </div>
+    </div>
+    <div class="context-problem" id="contextProblem">
+      <strong>Problema seleccionado:</strong> <span id="problemText">Desperdicio alimentario global - Un tercio de los alimentos producidos se desperdicia mientras millones pasan hambre.</span>
+    </div>
+  </div>
+
+  <!-- SECTION CONSUMERS -->
+  <section class="section">
+    <div class="sec-kicker">02 · Categorías de consumidores</div>
+    <h2 class="sec-title">Tres tipos de personas, <em>tres relaciones con el problema</em></h2>
+    <p class="sec-body">
+      Los consumidores se organizan en tres categorías fundamentales: quienes experimentan el problema directamente (usuarios finales), quienes toman decisiones sobre soluciones (decisores), y quienes influyen en la adopción (influenciadores). Explora cada categoría para construir tu mapa completo del ecosistema.
+    </p>
+  </section>
+
+  <!-- CONSUMER CATEGORIES -->
+  <div class="consumer-categories" id="consumerCategories">
+    <div class="category-card" onclick="openConsumersModal('endUsers')">
+      <div class="category-header">
+        <span class="category-icon-large">👥</span>
+        <h3 class="category-title">Usuarios Finales</h3>
+        <p class="category-subtitle">Experimentan el problema directamente</p>
+      </div>
+      <div class="category-body">
+        <p class="category-description">
+          Son las personas que viven el problema en su día a día. Sienten el dolor, la frustración, la ineficiencia. Su experiencia es la fuente primaria de insight para tu solución.
+        </p>
+        <div class="consumer-count" id="endUsersCount">Explora perfiles →</div>
+      </div>
+    </div>
+
+    <div class="category-card" onclick="openConsumersModal('decisionMakers')">
+      <div class="category-header">
+        <span class="category-icon-large">🎯</span>
+        <h3 class="category-title">Decisores</h3>
+        <p class="category-subtitle">Controlan presupuestos y adopción</p>
+      </div>
+      <div class="category-body">
+        <p class="category-description">
+          Tienen el poder de aprobar, financiar o implementar soluciones. No siempre experimentan el problema directamente, pero controlan el acceso al mercado.
+        </p>
+        <div class="consumer-count" id="decisionMakersCount">Explora perfiles →</div>
+      </div>
+    </div>
+
+    <div class="category-card" onclick="openConsumersModal('influencers')">
+      <div class="category-header">
+        <span class="category-icon-large">🌟</span>
+        <h3 class="category-title">Influenciadores</h3>
+        <p class="category-subtitle">Moldean opiniones y tendencias</p>
+      </div>
+      <div class="category-body">
+        <p class="category-description">
+          Expertos, líderes de opinión, reguladores, medios. No compran directamente ni experimentan el problema, pero su voz acelera o frena la adopción de soluciones.
+        </p>
+        <div class="consumer-count" id="influencersCount">Explora perfiles →</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ECOSYSTEM MAP -->
+  <div class="ecosystem-map" id="ecosystemMap">
+    <div class="ecosystem-header">
+      <h3 class="ecosystem-title">Tu Mapa de Ecosistema</h3>
+      <p class="ecosystem-subtitle">
+        Has identificado los consumidores específicos que experimentan el problema. Este es el fundamento para construir una propuesta que resuene con sus necesidades reales.
+      </p>
+    </div>
+
+    <div class="ecosystem-visual">
+      <div class="ecosystem-center">
+        <div class="ecosystem-center-label">Tu problema</div>
+        <div class="ecosystem-center-content" id="ecosystemProblem"></div>
+      </div>
+
+      <div class="ecosystem-consumers" id="ecosystemConsumersList"></div>
+    </div>
+
+    <div class="ecosystem-actions">
+      <button class="ecosystem-btn btn-secondary" onclick="resetSelection()">← Explorar otro problema</button>
+      <button class="ecosystem-btn btn-primary" onclick="continueToProposal()">Continuar al Módulo Cria →</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- CONSUMERS MODAL -->
+<div class="consumers-modal" id="consumersModal">
+  <div class="consumers-modal-content">
+    <div class="consumers-modal-header">
+      <button class="close-modal" onclick="closeModal()">×</button>
+      <div class="modal-category-icon" id="modalCategoryIcon"></div>
+      <h2 class="modal-category-title" id="modalCategoryTitle"></h2>
+      <div class="modal-category-context" id="modalCategoryContext"></div>
+    </div>
+    <div class="consumers-modal-body">
+      <div class="consumers-grid" id="consumersGrid"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── STARFIELD ANIMATION ──
+const canvas = document.getElementById('cosmos');
+const ctx = canvas.getContext('2d');
+let w, h, stars = [];
+
+function resize() {
+  w = canvas.width = window.innerWidth;
+  h = canvas.height = window.innerHeight;
+}
+
+function Star() {
+  this.x = Math.random() * w;
+  this.y = Math.random() * h;
+  this.z = Math.random() * 1000;
+}
+
+Star.prototype.update = function() {
+  this.z -= 0.5;
+  if (this.z <= 0) {
+    this.z = 1000;
+    this.x = Math.random() * w;
+    this.y = Math.random() * h;
+  }
+};
+
+Star.prototype.draw = function() {
+  const x = (this.x - w / 2) * (1000 / this.z) + w / 2;
+  const y = (this.y - h / 2) * (1000 / this.z) + h / 2;
+  const s = (1000 - this.z) / 1000;
+  const size = s * 2;
+  const opacity = s * 0.4;
+  ctx.fillStyle = `rgba(240, 238, 232, ${opacity})`;
+  ctx.beginPath();
+  ctx.arc(x, y, size, 0, Math.PI * 2);
+  ctx.fill();
+};
+
+function init() {
+  resize();
+  for (let i = 0; i < 300; i++) {
+    stars.push(new Star());
+  }
+}
+
+function animate() {
+  ctx.fillStyle = 'rgba(4, 4, 10, 0.1)';
+  ctx.fillRect(0, 0, w, h);
+  stars.forEach(star => {
+    star.update();
+    star.draw();
+  });
+  requestAnimationFrame(animate);
+}
+
+window.addEventListener('resize', resize);
+init();
+animate();
+
+// ── DATA STRUCTURE ──
+const sectorsData = [
+  {
+    id: 1,
+    emoji: '🌾',
+    name: 'Alimentos & Nutrientes',
+    component: 'Servicios - Restaurantes y distribución',
+    problem: 'Desperdicio alimentario global',
+    consumers: {
+      endUsers: [
+        { icon: '👨‍👩‍👧‍👦', name: 'Familias de bajos ingresos', description: 'No pueden permitirse desperdiciar alimentos pero carecen de técnicas de conservación y planificación.', pains: ['Presupuesto limitado', 'Falta información', 'Sin refrigeración adecuada'] },
+        { icon: '🏠', name: 'Consumidores urbanos millennials', description: 'Compran más de lo que consumen por falta de planificación y desconexión con origen de alimentos.', pains: ['Vida ocupada', 'Porciones grandes', 'Fechas confusas'] },
+        { icon: '👵', name: 'Adultos mayores solos', description: 'Reciben porciones diseñadas para familias, generando desperdicio inevitable.', pains: ['Viven solos', 'Movilidad limitada', 'Porciones grandes'] },
+        { icon: '🎓', name: 'Estudiantes universitarios', description: 'Primera vez comprando y cocinando, cometen errores de planificación y conservación.', pains: ['Sin experiencia', 'Presupuesto ajustado', 'Cocinas compartidas'] },
+        { icon: '🏢', name: 'Trabajadores de oficina', description: 'Compran almuerzos que no consumen completamente por porciones inadecuadas.', pains: ['Poco tiempo', 'Opciones limitadas', 'Sin refrigerador'] }
+      ],
+      decisionMakers: [
+        { icon: '👔', name: 'Gerentes de supermercados', description: 'Deciden políticas de donación y descuento de productos próximos a vencer.', pains: ['Regulación confusa', 'Responsabilidad legal', 'Márgenes ajustados'] },
+        { icon: '🏛️', name: 'Funcionarios municipales', description: 'Controlan políticas de gestión de residuos orgánicos y programas de recuperación alimentaria.', pains: ['Presupuesto público', 'Coordinación compleja', 'Resultados políticos'] },
+        { icon: '🍽️', name: 'Dueños de restaurantes', description: 'Determinan tamaños de porción, políticas de excedentes y relación con bancos de alimentos.', pains: ['Costos operativos', 'Imagen de marca', 'Logística donación'] },
+        { icon: '🏭', name: 'Directores de cadenas alimentarias', description: 'Establecen estándares de calidad que resultan en rechazo de alimentos "imperfectos".', pains: ['Estándares estéticos', 'Expectativas consumidores', 'Eficiencia logística'] },
+        { icon: '🏡', name: 'Administradores de condominios', description: 'Implementan sistemas de compostaje o separación de orgánicos en edificios.', pains: ['Consenso residentes', 'Espacio limitado', 'Costo mantenimiento'] }
+      ],
+      influencers: [
+        { icon: '📺', name: 'Chefs y personalidades culinarias', description: 'Moldean hábitos de consumo y percepción sobre fechas de caducidad y aprovechamiento.', pains: ['Autenticidad vs comercial', 'Alcance limitado', 'Cambio de hábitos lento'] },
+        { icon: '🌍', name: 'ONGs ambientalistas', description: 'Generan conciencia sobre el impacto climático del desperdicio alimentario.', pains: ['Recursos limitados', 'Competencia por atención', 'Medición de impacto'] },
+        { icon: '📰', name: 'Periodistas especializados', description: 'Investigan y publican sobre la magnitud del problema y soluciones emergentes.', pains: ['Saturación noticias', 'Falta datos locales', 'Mantener interés público'] },
+        { icon: '🎓', name: 'Investigadores académicos', description: 'Estudian causas, magnitud e impacto del desperdicio, generando evidencia para políticas.', pains: ['Financiamiento escaso', 'Datos fragmentados', 'Traducción a acción'] },
+        { icon: '⚖️', name: 'Reguladores de salud pública', description: 'Establecen normas sobre fechas de caducidad, etiquetado y donación de alimentos.', pains: ['Balance seguridad/desperdicio', 'Presión industria', 'Armonización internacional'] }
+      ]
+    }
+  },
+  {
+    id: 2,
+    emoji: '🩺',
+    name: 'Salud & Farmacéutica',
+    component: 'Servicios - Atención hospitalaria',
+    problem: 'Desigualdad en acceso a atención médica',
+    consumers: {
+      endUsers: [
+        { icon: '🏚️', name: 'Poblaciones rurales remotas', description: 'Viven a horas de centros de salud, sin transporte ni infraestructura médica local.', pains: ['Distancia extrema', 'Sin ambulancia', 'Costos de viaje'] },
+        { icon: '💼', name: 'Trabajadores informales', description: 'Carecen de seguro de salud y no pueden pagar consultas privadas ni medicamentos.', pains: ['Sin seguro', 'Ingresos irregulares', 'Miedo a perder trabajo'] },
+        { icon: '🚶‍♀️', name: 'Migrantes indocumentados', description: 'Temen buscar atención médica por riesgo de deportación, agravando condiciones tratables.', pains: ['Miedo deportación', 'Sin documentos', 'Barrera idioma'] },
+        { icon: '👩', name: 'Mujeres en zonas conservadoras', description: 'Restricciones culturales les impiden acceder a atención ginecológica y obstétrica adecuada.', pains: ['Estigma social', 'Requieren permiso', 'Médicas escasas'] },
+        { icon: '🧓', name: 'Adultos mayores sin movilidad', description: 'Condiciones crónicas requieren seguimiento pero no pueden trasladarse a hospitales.', pains: ['Movilidad limitada', 'Citas lejanas', 'Sin acompañante'] }
+      ],
+      decisionMakers: [
+        { icon: '🏛️', name: 'Ministros de salud pública', description: 'Asignan presupuestos y priorizan construcción de infraestructura médica.', pains: ['Presupuesto limitado', 'Demandas múltiples', 'Resultados a largo plazo'] },
+        { icon: '🏥', name: 'Directores de hospitales públicos', description: 'Deciden distribución de recursos entre emergencias, cirugías y consultas externas.', pains: ['Sobrecapacidad', 'Personal insuficiente', 'Equipos obsoletos'] },
+        { icon: '🏢', name: 'CEOs de aseguradoras', description: 'Determinan qué tratamientos cubren y a qué poblaciones aseguran.', pains: ['Rentabilidad', 'Riesgo adverso', 'Regulación variable'] },
+        { icon: '👨‍⚕️', name: 'Rectores de facultades médicas', description: 'Definen currículo y distribución de graduados entre ciudades y zonas rurales.', pains: ['Retención rural', 'Prestigio académico', 'Financiamiento'] },
+        { icon: '🏛️', name: 'Alcaldes de municipios', description: 'Gestionan clínicas locales y programas de salud comunitaria con presupuestos municipales.', pains: ['Recursos escasos', 'Múltiples prioridades', 'Expectativas altas'] }
+      ],
+      influencers: [
+        { icon: '🩺', name: 'Médicos en redes sociales', description: 'Educan sobre prevención y desmitifican acceso a salud, orientando a comunidades.', pains: ['Desinformación rampante', 'Responsabilidad legal', 'Agotamiento'] },
+        { icon: '🌐', name: 'OMS y organismos internacionales', description: 'Establecen estándares globales y presionan gobiernos para expandir cobertura universal.', pains: ['Soberanía nacional', 'Implementación lenta', 'Verificación difícil'] },
+        { icon: '📊', name: 'Think tanks de política de salud', description: 'Generan evidencia sobre modelos de atención y recomiendan reformas sistémicas.', pains: ['Adopción lenta', 'Intereses políticos', 'Evidencia vs ideología'] },
+        { icon: '📰', name: 'Periodistas de investigación', description: 'Exponen desigualdades, casos de negligencia y corrupción en sistemas de salud.', pains: ['Acceso a datos', 'Presión editores', 'Seguridad personal'] },
+        { icon: '⚖️', name: 'Cortes constitucionales', description: 'Dictaminan sobre derecho a la salud, forzando gobiernos a garantizar acceso.', pains: ['Capacidad estatal', 'Litigiosidad masiva', 'Presupuesto limitado'] }
+      ]
+    }
+  },
+  {
+    id: 3,
+    emoji: '🏙️',
+    name: 'Vivienda & Servicios',
+    component: 'Servicios - Suministro de agua',
+    problem: 'Acceso universal a agua potable',
+    consumers: {
+      endUsers: [
+        { icon: '🚰', name: 'Familias en asentamientos informales', description: 'Construyen viviendas sin conexión a red de agua, dependiendo de camiones cisterna caros.', pains: ['Agua costosa', 'Calidad dudosa', 'Suministro irregular'] },
+        { icon: '🏜️', name: 'Comunidades en zonas áridas', description: 'Viven en regiones donde el agua subterránea se agota y llueve escasamente.', pains: ['Fuentes agotadas', 'Pozos secos', 'Desertificación'] },
+        { icon: '🌾', name: 'Agricultores de subsistencia', description: 'Comparten fuentes de agua contaminada para beber y regar, sin alternativas.', pains: ['Competencia por agua', 'Enfermedades', 'Cosechas perdidas'] },
+        { icon: '🏫', name: 'Escuelas rurales', description: 'Carecen de agua potable para estudiantes, afectando salud y asistencia.', pains: ['Ausentismo', 'Enfermedades gastrointestinales', 'Sin baños funcionales'] },
+        { icon: '🏥', name: 'Clínicas sin agua corriente', description: 'Centros de salud básicos operan sin agua confiable para higiene y procedimientos.', pains: ['Infecciones', 'Partos inseguros', 'Sin esterilización'] }
+      ],
+      decisionMakers: [
+        { icon: '🏛️', name: 'Ministros de infraestructura', description: 'Priorizan inversión entre carreteras, electricidad y agua potable con presupuestos limitados.', pains: ['Múltiples demandas', 'Resultados a largo plazo', 'Corrupción'] },
+        { icon: '🚰', name: 'Directores de empresas de agua', description: 'Deciden expansión de red versus mantención de infraestructura existente.', pains: ['Pérdidas en red', 'Tarifas políticas', 'Inversión masiva'] },
+        { icon: '🏦', name: 'Bancos de desarrollo', description: 'Financian proyectos de infraestructura hídrica evaluando retorno social versus financiero.', pains: ['Riesgo país', 'Tarifas bajas', 'Capacidad ejecución'] },
+        { icon: '🌍', name: 'Cooperación internacional', description: 'Otorgan donaciones y préstamos para proyectos de agua y saneamiento en países pobres.', pains: ['Sostenibilidad post-donación', 'Coordinación local', 'Condicionalidades'] },
+        { icon: '🏘️', name: 'Líderes comunitarios', description: 'Organizan a vecinos para demandar servicios y gestionar soluciones colectivas como pozos.', pains: ['Recursos propios', 'Conocimiento técnico', 'Legitimidad'] }
+      ],
+      influencers: [
+        { icon: '🌊', name: 'Activistas por el agua', description: 'Movilizan opinión pública y presionan gobiernos para reconocer el agua como derecho humano.', pains: ['Represión', 'Financiamiento', 'Narrativa corporativa'] },
+        { icon: '🔬', name: 'Hidrólogos e ingenieros', description: 'Desarrollan tecnologías de potabilización y desalinización asequibles.', pains: ['Escalabilidad', 'Costo energético', 'Adopción lenta'] },
+        { icon: '🌐', name: 'Organismos de la ONU', description: 'Monitorean cumplimiento de ODS 6 (agua limpia) y publican estadísticas globales.', pains: ['Datos incompletos', 'Presión limitada', 'Prioridades múltiples'] },
+        { icon: '📺', name: 'Documentalistas', description: 'Producen contenido sobre crisis hídrica global y proyectos innovadores de acceso.', pains: ['Fatiga de audiencia', 'Distribución limitada', 'Financiamiento'] },
+        { icon: '🏅', name: 'Celebridades filantrópicas', description: 'Usan su plataforma para visibilizar proyectos de agua potable y recaudar fondos.', pains: ['Autenticidad cuestionada', 'Impacto limitado', 'Dependencia donaciones'] }
+      ]
+    }
+  },
+  {
+    id: 4,
+    emoji: '📚',
+    name: 'Educación & Profesiones',
+    component: 'Servicios - Educación superior',
+    problem: 'Desconexión entre educación y mercado laboral',
+    consumers: {
+      endUsers: [
+        { icon: '🎓', name: 'Recién graduados sin empleo', description: 'Pasaron años estudiando carreras que el mercado no demanda o con habilidades obsoletas.', pains: ['Deuda estudiantil', 'Sin experiencia', 'Expectativas rotas'] },
+        { icon: '💼', name: 'Profesionistas buscando reentrenamiento', description: 'Sus habilidades quedaron obsoletas por automatización o cambio tecnológico.', pains: ['Edad discriminada', 'Costos reentrenamiento', 'Tiempo limitado'] },
+        { icon: '🌍', name: 'Jóvenes en países en desarrollo', description: 'Estudian currículo desactualizado desconectado de economía digital global.', pains: ['Educación teórica', 'Sin acceso tech', 'Migración forzada'] },
+        { icon: '👩‍🔧', name: 'Trabajadores técnicos', description: 'Tienen habilidades prácticas valiosas pero sin credenciales reconocidas por empleadores.', pains: ['Sin certificación', 'Discriminación educativa', 'Salarios bajos'] },
+        { icon: '🧑‍🎓', name: 'Estudiantes indecisos', description: 'Eligen carreras por presión social sin información sobre empleabilidad real.', pains: ['Desinformación', 'Presión familiar', 'Cambios costosos'] }
+      ],
+      decisionMakers: [
+        { icon: '🏫', name: 'Rectores universitarios', description: 'Definen currículos, actualizan programas y deciden alianzas con industria.', pains: ['Burocracia académica', 'Resistencia docente', 'Acreditación rígida'] },
+        { icon: '📚', name: 'Comités de acreditación', description: 'Aprueban programas educativos basados en estándares que pueden estar desactualizados.', pains: ['Estándares obsoletos', 'Proceso lento', 'Presión política'] },
+        { icon: '🏢', name: 'Directores de RRHH corporativos', description: 'Establecen requisitos de contratación y detectan brechas de habilidades en el mercado.', pains: ['Candidatos inadecuados', 'Reentrenamiento costoso', 'Rotación alta'] },
+        { icon: '🏛️', name: 'Ministros de educación', description: 'Regulan sistemas educativos y asignan presupuestos entre educación tradicional y técnica.', pains: ['Inercia sistémica', 'Sindicatos docentes', 'Resultados a largo plazo'] },
+        { icon: '💰', name: 'Inversionistas en EdTech', description: 'Financian startups educativas evaluando tracción y modelo de negocio.', pains: ['Bajo CAC', 'Retención estudiantes', 'Certificación válida'] }
+      ],
+      influencers: [
+        { icon: '💡', name: 'Emprendedores tech prominentes', description: 'Critican públicamente educación tradicional y promueven aprendizaje autodidacta.', pains: ['Privilegio no reconocido', 'Narrativa simplista', 'Reproducción desigual'] },
+        { icon: '📊', name: 'Economistas laborales', description: 'Publican estudios sobre brechas de habilidades y retorno de inversión educativa.', pains: ['Datos fragmentados', 'Cambio rápido', 'Política vs evidencia'] },
+        { icon: '🎙️', name: 'Podcasters y YouTubers educativos', description: 'Enseñan habilidades prácticas gratuitamente, compitiendo con educación formal.', pains: ['Monetización difícil', 'Certificación informal', 'Saturación contenido'] },
+        { icon: '🌐', name: 'Foros de empleadores', description: 'Articulan demandas de la industria y presionan instituciones para actualizar programas.', pains: ['Fragmentación sectorial', 'Cambio lento', 'Falta coordinación'] },
+        { icon: '📰', name: 'Medios especializados en educación', description: 'Reportan sobre innovación educativa, empleabilidad y crisis del sistema tradicional.', pains: ['Acceso a datos', 'Interés del público', 'Resistencia institucional'] }
+      ]
+    }
+  },
+  {
+    id: 5,
+    emoji: '✈️',
+    name: 'Transporte & Logística',
+    component: 'Servicios - Transporte urbano',
+    problem: 'Congestión urbana insostenible',
+    consumers: {
+      endUsers: [
+        { icon: '🚗', name: 'Commuters diarios', description: 'Pasan 2-3 horas diarias en tráfico, perdiendo tiempo con familia y afectando salud mental.', pains: ['Estrés crónico', 'Tiempo perdido', 'Costos combustible'] },
+        { icon: '🚌', name: 'Usuarios de transporte público', description: 'Sufren buses atestados, retrasos impredecibles y rutas ineficientes.', pains: ['Aglomeración', 'Inseguridad', 'Retrasos'] },
+        { icon: '🚚', name: 'Conductores de entregas', description: 'Tráfico convierte rutas de 30 minutos en 2 horas, impactando entregas y salarios.', pains: ['Presión tiempo', 'Multas', 'Estrés laboral'] },
+        { icon: '🚑', name: 'Servicios de emergencia', description: 'Ambulancias y bomberos atrapados en congestión, llegando tarde a emergencias críticas.', pains: ['Vidas en riesgo', 'Frustración', 'Impotencia'] },
+        { icon: '🏪', name: 'Comerciantes locales', description: 'Tráfico aleja clientes de tiendas físicas, acelerando cierre de comercios.', pains: ['Menos clientes', 'Renta alta', 'Competencia online'] }
+      ],
+      decisionMakers: [
+        { icon: '🏛️', name: 'Alcaldes y concejos municipales', description: 'Deciden inversión en infraestructura vial, transporte público y políticas de tráfico.', pains: ['Presupuesto limitado', 'Presión automóvil', 'Resultados a largo plazo'] },
+        { icon: '🚇', name: 'Directores de metro/transporte masivo', description: 'Priorizan expansión de líneas versus mantención de sistema existente.', pains: ['Sobrecapacidad', 'Inversión masiva', 'Subsidios'] },
+        { icon: '🚦', name: 'Secretarios de movilidad', description: 'Implementan peajes urbanos, zonas de bajas emisiones y prioridad a transporte público.', pains: ['Resistencia ciudadana', 'Lobby automotriz', 'Coordinación metropolitana'] },
+        { icon: '🏗️', name: 'Desarrolladores inmobiliarios', description: 'Construyen proyectos que inducen más tráfico sin inversión en transporte.', pains: ['Regulación débil', 'Rentabilidad corto plazo', 'Externalidades ignoradas'] },
+        { icon: '🚗', name: 'CEOs de apps de movilidad', description: 'Operan servicios de ride-hailing que pueden agravar congestión.', pains: ['Regulación', 'Rentabilidad', 'Congestión por diseño'] }
+      ],
+      influencers: [
+        { icon: '🌍', name: 'Urbanistas y planificadores', description: 'Abogan por ciudades caminables, ciclables y densas con transporte público robusto.', pains: ['Resistencia política', 'NIMBYism', 'Inercia infraestructura'] },
+        { icon: '📊', name: 'Economistas de transporte', description: 'Cuantifican costos de congestión y beneficios de inversión en movilidad sostenible.', pains: ['Datos limitados', 'Modelos complejos', 'Decisiones políticas'] },
+        { icon: '🚴', name: 'Activistas de movilidad activa', description: 'Presionan por ciclovías, calles peatonales y políticas pro-bicicleta.', pains: ['Infraestructura hostil', 'Resistencia motorizada', 'Seguridad'] },
+        { icon: '🌱', name: 'ONGs ambientalistas', description: 'Visibilizan impacto climático y de salud de la congestión vehicular.', pains: ['Competencia por atención', 'Cambio lento', 'Lobby combustibles'] },
+        { icon: '📺', name: 'Medios de comunicación', description: 'Reportan sobre "caos vial" diariamente pero raramente sobre soluciones sistémicas.', pains: ['Narrativa sensacionalista', 'Complejidad', 'Interés anunciantes'] }
+      ]
+    }
+  },
+  {
+    id: 6,
+    emoji: '⚡',
+    name: 'Energía & Petróleo',
+    component: 'Infraestructura - Redes eléctricas',
+    problem: 'Redes no diseñadas para renovables',
+    consumers: {
+      endUsers: [
+        { icon: '🏡', name: 'Propietarios con paneles solares', description: 'Generan electricidad excedente pero no pueden inyectarla a red o reciben compensación mínima.', pains: ['Burocracia conexión', 'Compensación baja', 'Inversión sin retorno'] },
+        { icon: '🏭', name: 'Industrias con metas de sostenibilidad', description: 'Quieren comprar energía renovable pero red no permite contratos directos con generadores.', pains: ['Opciones limitadas', 'Precios volátiles', 'Reputación en riesgo'] },
+        { icon: '🚗', name: 'Propietarios de vehículos eléctricos', description: 'Enfrentan cortes de luz en horas pico cuando múltiples EVs cargan simultáneamente.', pains: ['Red sobrecargada', 'Carga lenta', 'Ansiedad por rango'] },
+        { icon: '🌾', name: 'Agricultores con riego eléctrico', description: 'Tarifas altas y apagones dañan cultivos, pero generación local renovable es inviable.', pains: ['Costos energía', 'Apagones críticos', 'Sin financiamiento'] },
+        { icon: '🏘️', name: 'Comunidades rurales aisladas', description: 'Microrredes renovables locales no pueden interconectarse con red nacional.', pains: ['Confiabilidad baja', 'Sin respaldo', 'Costos altos'] }
+      ],
+      decisionMakers: [
+        { icon: '⚡', name: 'CEOs de utilities eléctricas', description: 'Enfrentan dilema entre defender modelo centralizado vs adaptarse a generación distribuida.', pains: ['Activos obsoletos', 'Regulación transición', 'Espiral de muerte'] },
+        { icon: '🏛️', name: 'Reguladores de energía', description: 'Deben diseñar mercados que incentiven renovables sin colapsar red.', pains: ['Intereses encontrados', 'Complejidad técnica', 'Presión política'] },
+        { icon: '🔧', name: 'Operadores de red', description: 'Gestionan estabilidad de frecuencia y voltaje con generación intermitente impredecible.', pains: ['Variabilidad renovable', 'Inversión masiva', 'Riesgo apagones'] },
+        { icon: '💰', name: 'Inversionistas en infraestructura', description: 'Deben decidir si financiar actualización de red con retorno incierto.', pains: ['Riesgo regulatorio', 'Retorno largo plazo', 'Obsolescencia'] },
+        { icon: '🏛️', name: 'Ministros de energía', description: 'Balance entre transición renovable, confiabilidad y costos para consumidores.', pains: ['Múltiples objetivos', 'Resistencia incumbentes', 'Urgencia climática'] }
+      ],
+      influencers: [
+        { icon: '🌍', name: 'Científicos del clima', description: 'Presionan por electrificación rápida de economía con energías limpias.', pains: ['Resistencia incumbentes', 'Complejidad sistémica', 'Urgencia creciente'] },
+        { icon: '💡', name: 'Emprendedores de energtech', description: 'Desarrollan baterías, software de gestión de red y modelos de negocio innovadores.', pains: ['Regulación lenta', 'Incumbentes bloqueando', 'Financiamiento'] },
+        { icon: '📊', name: 'Analistas de mercados energéticos', description: 'Publican sobre costos decrecientes de renovables y almacenamiento.', pains: ['Datos propietarios', 'Intereses sesgando análisis', 'Cambio rápido'] },
+        { icon: '🌐', name: 'Agencias internacionales de energía', description: 'Establecen escenarios de transición y mejores prácticas regulatorias.', pains: ['Contextos diversos', 'Adopción voluntaria', 'Presión limitada'] },
+        { icon: '📺', name: 'Documentalistas de transición energética', description: 'Visibilizan éxitos y fracasos de países líderes en renovables.', pains: ['Complejidad técnica', 'Audiencia nicho', 'Narrativa polarizada'] }
+      ]
+    }
+  },
+  {
+    id: 7,
+    emoji: '📡',
+    name: 'Comunicaciones & Internet',
+    component: 'Servicios - Internet banda ancha',
+    problem: 'Brecha digital global persistente',
+    consumers: {
+      endUsers: [
+        { icon: '🌄', name: 'Familias rurales', description: 'Sin acceso a internet de calidad, sus hijos no pueden estudiar online ni acceder a servicios digitales.', pains: ['Educación limitada', 'Sin telemedicina', 'Aislamiento'] },
+        { icon: '💼', name: 'Emprendedores en zonas remotas', description: 'Ideas de negocio digital inviables por conectividad inexistente o costosa.', pains: ['Sin e-commerce', 'Costos prohibitivos', 'Desventaja competitiva'] },
+        { icon: '🏚️', name: 'Población de bajos ingresos urbanos', description: 'Pueden acceder a internet móvil prepago pero es demasiado caro para uso intensivo.', pains: ['Datos limitados', 'Costo alto', 'Sin computadora'] },
+        { icon: '👵', name: 'Adultos mayores', description: 'Desconocen cómo usar internet y carecen de alfabetización digital para servicios básicos.', pains: ['Sin capacitación', 'Interfaces complejas', 'Exclusión bancaria'] },
+        { icon: '🏫', name: 'Escuelas públicas sin conectividad', description: 'Estudiantes no pueden desarrollar competencias digitales esenciales para siglo XXI.', pains: ['Currículum obsoleto', 'Brecha habilidades', 'Desventaja laboral'] }
+      ],
+      decisionMakers: [
+        { icon: '🏛️', name: 'Ministros de telecomunicaciones', description: 'Diseñan políticas de universalización de servicio y asignan fondos de conectividad.', pains: ['Geografía desafiante', 'ROI bajo rural', 'Presión fiscal'] },
+        { icon: '📡', name: 'CEOs de operadores de telecomunicaciones', description: 'Deciden expansión de red a zonas no rentables comercialmente.', pains: ['Obligaciones de servicio universal', 'Retorno negativo', 'Competencia urbana'] },
+        { icon: '🛰️', name: 'Directores de proyectos satelitales', description: 'Implementan constelaciones de internet satelital para zonas remotas.', pains: ['Inversión masiva', 'Latencia', 'Precio competitivo'] },
+        { icon: '🏫', name: 'Secretarios de educación', description: 'Deben decidir inversión en conectividad escolar vs otros recursos educativos.', pains: ['Presupuesto limitado', 'Mantenimiento', 'Capacitación docente'] },
+        { icon: '🏦', name: 'Bancos de desarrollo', description: 'Financian proyectos de infraestructura digital evaluando impacto social.', pains: ['Sostenibilidad financiera', 'Tecnología adecuada', 'Capacidad local'] }
+      ],
+      influencers: [
+        { icon: '🌐', name: 'Defensores de derechos digitales', description: 'Abogan por internet como derecho humano y presionan por conectividad universal.', pains: ['Resistencia mercado', 'Costo servicios', 'Privacidad vs acceso'] },
+        { icon: '💡', name: 'Innovadores en conectividad', description: 'Desarrollan tecnologías de bajo costo: WiFi comunitario, redes mesh, TV white space.', pains: ['Regulación espectro', 'Escalabilidad', 'Modelo de negocio'] },
+        { icon: '📊', name: 'Investigadores de brecha digital', description: 'Documentan dimensiones de exclusión digital: acceso, habilidades, uso significativo.', pains: ['Datos fragmentados', 'Definición cambiante', 'Multicausalidad'] },
+        { icon: '🌍', name: 'Organismos internacionales', description: 'Establecen metas de conectividad universal y monitorean progreso de países.', pains: ['Definiciones variables', 'Reporte inconsistente', 'Presión limitada'] },
+        { icon: '📺', name: 'Creadores de contenido educativo', description: 'Producen contenido digital gratuito pero inaccesible sin conectividad.', pains: ['Alcance limitado', 'Adaptación offline', 'Monetización'] }
+      ]
+    }
+  },
+  {
+    id: 8,
+    emoji: '🏦',
+    name: 'Financiero & Seguros',
+    component: 'Servicios - Banca',
+    problem: 'Exclusión financiera de miles de millones',
+    consumers: {
+      endUsers: [
+        { icon: '👨‍🌾', name: 'Agricultores de subsistencia', description: 'Sin cuenta bancaria ni historial crediticio, dependen de prestamistas informales abusivos.', pains: ['Tasas usura', 'Sin ahorro seguro', 'Exclusión digital'] },
+        { icon: '🏪', name: 'Microemprendedores informales', description: 'Negocio en efectivo no deja rastro, imposibilitando acceso a crédito formal.', pains: ['Sin comprobantes', 'Capital limitado', 'Crecimiento lento'] },
+        { icon: '🚶‍♀️', name: 'Mujeres en países patriarcales', description: 'Requieren permiso de esposo para abrir cuentas o no pueden heredar propiedades para garantía.', pains: ['Control masculino', 'Sin activos', 'Dependencia'] },
+        { icon: '🆔', name: 'Personas sin documentos de identidad', description: 'Millones carecen de ID oficial necesaria para abrir cuentas bancarias.', pains: ['Requisitos imposibles', 'Ciclo pobreza', 'Vulnerabilidad'] },
+        { icon: '🏚️', name: 'Refugiados y desplazados', description: 'Pierden acceso a sistemas bancarios de país de origen sin poder abrir cuentas en destino.', pains: ['Sin historial', 'Barrera idioma', 'Desconfianza'] }
+      ],
+      decisionMakers: [
+        { icon: '🏛️', name: 'Bancos centrales', description: 'Regulan requisitos de apertura de cuentas balanceando inclusión y prevención de lavado de dinero.', pains: ['AML vs inclusión', 'Riesgo sistémico', 'Presión internacional'] },
+        { icon: '🏦', name: 'CEOs de bancos comerciales', description: 'Deciden si invertir en sucursales rurales o agentes corresponsales bancarios.', pains: ['ROI negativo', 'Riesgo operativo', 'Modelo de negocio'] },
+        { icon: '📱', name: 'Fundadores de fintechs', description: 'Diseñan productos para poblaciones no bancarizadas pero enfrentan regulación.', pains: ['Licencias', 'Capitalización', 'Adquisición clientes'] },
+        { icon: '🏛️', name: 'Ministros de desarrollo social', description: 'Implementan transferencias condicionadas de efectivo que pueden impulsar bancarización.', pains: ['Infraestructura', 'Alfabetización financiera', 'Costos transacción'] },
+        { icon: '🌐', name: 'Organismos de cooperación', description: 'Financian proyectos de inclusión financiera pero con métricas de éxito limitadas.', pains: ['Sostenibilidad', 'Medición impacto', 'Coordinación'] }
+      ],
+      influencers: [
+        { icon: '📊', name: 'Investigadores de pobreza', description: 'Documentan vínculo entre acceso financiero y reducción de pobreza.', pains: ['Causalidad compleja', 'Contextos diversos', 'Implementación'] },
+        { icon: '🎓', name: 'Economistas del comportamiento', description: 'Estudian barreras psicológicas y de diseño que impiden adopción de servicios financieros.', pains: ['Lab vs campo', 'Generalización', 'Adopción hallazgos'] },
+        { icon: '🌍', name: 'Defensores de inclusión financiera', description: 'Abogan por regulación que permita modelos innovadores de bajo costo.', pains: ['Resistencia incumbentes', 'Complejidad regulatoria', 'Captura regulador'] },
+        { icon: '💳', name: 'Redes de pagos globales', description: 'Expanden infraestructura de pagos digitales pero con comisiones prohibitivas.', pains: ['Comisiones altas', 'Interoperabilidad', 'Last mile'] },
+        { icon: '📺', name: 'Medios especializados', description: 'Reportan sobre innovaciones en fintech y microfinanzas para poblaciones excluidas.', pains: ['Audiencia nicho', 'Complejidad técnica', 'Hype vs realidad'] }
+      ]
+    }
+  },
+  {
+    id: 9,
+    emoji: '🎭',
+    name: 'Entretenimiento & Turismo',
+    component: 'Servicios - Turismo',
+    problem: 'Turismo masivo destruyendo destinos',
+    consumers: {
+      endUsers: [
+        { icon: '🏖️', name: 'Turistas buscando autenticidad', description: 'Viajan a destinos icónicos pero encuentran multitudes, precios inflados y experiencia degradada.', pains: ['Sobre-turismo', 'Autenticidad perdida', 'Decepción'] },
+        { icon: '🏡', name: 'Residentes locales en zonas turísticas', description: 'Gentrificación turística expulsa población local, infla precios y destruye tejido social.', pains: ['Renta imposible', 'Ruido y basura', 'Comunidad perdida'] },
+        { icon: '🏛️', name: 'Conservadores de patrimonio', description: 'Sitios históricos se deterioran por pisoteo masivo y vandalismo de visitantes.', pains: ['Daño irreversible', 'Presupuesto insuficiente', 'Capacidad de carga'] },
+        { icon: '🐠', name: 'Ecosistemas naturales', description: 'Arrecifes, parques y playas colapsan bajo presión de millones de visitantes anuales.', pains: ['Contaminación', 'Especies amenazadas', 'Erosión'] },
+        { icon: '🚣', name: 'Operadores turísticos pequeños', description: 'No pueden competir con grandes cadenas que acaparan turistas masivos.', pains: ['Precios predatorios', 'Plataformas monopolio', 'Estacionalidad'] }
+      ],
+      decisionMakers: [
+        { icon: '🏛️', name: 'Alcaldes de ciudades turísticas', description: 'Balance entre ingresos del turismo y calidad de vida de residentes.', pains: ['Presión económica', 'Protesta social', 'Sostenibilidad'] },
+        { icon: '✈️', name: 'Directores de promoción turística', description: 'Deben promover destinos sin exacerbar sobre-turismo existente.', pains: ['Métricas volumen', 'Presión ingresos', 'Dispersión difícil'] },
+        { icon: '🏨', name: 'Hoteleros y alojamientos', description: 'Deciden capacidad de hospedaje y tarifas que pueden agravar gentrificación.', pains: ['Rentabilidad corto plazo', 'Regulación', 'Reputación'] },
+        { icon: '🚢', name: 'Ejecutivos de cruceros', description: 'Operan barcos que vierten miles de turistas simultáneamente en ciudades pequeñas.', pains: ['Restricciones puerto', 'Regulación ambiental', 'Imagen pública'] },
+        { icon: '🏛️', name: 'Ministros de turismo nacional', description: 'Priorizan crecimiento de llegadas internacionales como métrica de éxito.', pains: ['PIB vs sostenibilidad', 'Distribución beneficios', 'Estacionalidad'] }
+      ],
+      influencers: [
+        { icon: '🌍', name: 'Activistas anti-turismo masivo', description: 'Organizan protestas y campañas contra modelo de turismo depredador.', pains: ['Estigma anti-desarrollo', 'Dependencia económica', 'Alternativas viables'] },
+        { icon: '📚', name: 'Investigadores de turismo sostenible', description: 'Desarrollan modelos de gestión de carga turística y distribución temporal.', pains: ['Adopción limitada', 'Presión económica', 'Complejidad implementación'] },
+        { icon: '📸', name: 'Influencers de viajes', description: 'Promocionan destinos vírgenes que rápidamente colapsan por exposición.', pains: ['Responsabilidad impacto', 'Monetización', 'Saturación'] },
+        { icon: '🏅', name: 'Certificadoras de turismo sostenible', description: 'Establecen estándares de operación responsable pero con bajo enforcement.', pains: ['Greenwashing', 'Verificación costosa', 'Fragmentación sellos'] },
+        { icon: '📰', name: 'Periodistas de turismo', description: 'Reportan sobre destrucción de destinos pero perpetúan narrativa de crecimiento.', pains: ['Anunciantes turísticos', 'Complejidad soluciones', 'Interés público'] }
+      ]
+    }
+  },
+  {
+    id: 10,
+    emoji: '⚖️',
+    name: 'Seguridad & Justicia',
+    component: 'Servicios - Sistema judicial',
+    problem: 'Acceso a justicia para pobres inexistente',
+    consumers: {
+      endUsers: [
+        { icon: '👨‍👩‍👧', name: 'Familias de bajos ingresos', description: 'No pueden pagar abogados privados y defensores públicos están saturados.', pains: ['Sin representación', 'Ignorancia legal', 'Intimidación'] },
+        { icon: '🏚️', name: 'Víctimas de desalojo', description: 'Pierden viviendas por falta de defensa legal ante propietarios con recursos.', pains: ['Desamparo', 'Proceso complejo', 'Tiempo contra ellos'] },
+        { icon: '👷', name: 'Trabajadores con abusos laborales', description: 'Despidos injustificados, salarios impagos, sin capacidad de litigar contra empleadores.', pains: ['Represalias', 'Costos legales', 'Proceso largo'] },
+        { icon: '🌾', name: 'Campesinos sin títulos', description: 'Empresas usurpan tierras ancestrales sin que puedan defender propiedad legalmente.', pains: ['Sin documentos', 'Corrupción', 'Violencia'] },
+        { icon: '👨‍🦽', name: 'Personas con discapacidad', description: 'Discriminación sistemática sin acceso a justicia por barreras físicas y económicas.', pains: ['Inaccesibilidad', 'Discriminación', 'Sin apoyo'] }
+      ],
+      decisionMakers: [
+        { icon: '⚖️', name: 'Cortes supremas', description: 'Determinan requisitos procesales y cargas probatorias que pueden excluir a pobres.', pains: ['Formalismo excesivo', 'Precedente vs equidad', 'Congestión'] },
+        { icon: '🏛️', name: 'Ministros de justicia', description: 'Asignan presupuestos entre defensores públicos, infraestructura y digitalización.', pains: ['Recursos escasos', 'Múltiples demandas', 'Resultados lentos'] },
+        { icon: '👨‍⚖️', name: 'Decanos de facultades de derecho', description: 'Deciden si el currículum incluye clínicas legales para poblaciones vulnerables.', pains: ['Prestigio académico', 'Recursos', 'Resistencia docente'] },
+        { icon: '🏢', name: 'Directores de ONGs legales', description: 'Priorizan casos de impacto con recursos limitados, dejando miles sin atender.', pains: ['Financiamiento', 'Burnout equipo', 'Escalabilidad'] },
+        { icon: '💻', name: 'Desarrolladores de LegalTech', description: 'Crean plataformas de acceso a justicia pero monetización limita alcance a pobres.', pains: ['Modelo de negocio', 'Complejidad legal', 'Confianza usuarios'] }
+      ],
+      influencers: [
+        { icon: '🎓', name: 'Académicos de derecho y pobreza', description: 'Documentan barreras de acceso y proponen reformas procesales pro-pobres.', pains: ['Adopción judicial', 'Resistencia gremial', 'Implementación'] },
+        { icon: '🌐', name: 'Organismos de derechos humanos', description: 'Denuncian denegación de justicia como violación de derechos fundamentales.', pains: ['Soberanía nacional', 'Enforcement limitado', 'Captura judicial'] },
+        { icon: '📊', name: 'Investigadores de justicia', description: 'Miden brechas de acceso, tiempos procesales y costos de litigación.', pains: ['Datos reservados', 'Métrica compleja', 'Inercia sistémica'] },
+        { icon: '👨‍⚖️', name: 'Jueces progresistas', description: 'Interpretan flexiblemente procedimientos para facilitar acceso de litigantes pobres.', pains: ['Presión pares', 'Precedente', 'Volumen casos'] },
+        { icon: '📺', name: 'Periodistas de investigación judicial', description: 'Exponen casos de injusticia sistémica y denegación de acceso.', pains: ['Complejidad legal', 'Acceso expedientes', 'Desinterés audiencia'] }
+      ]
+    }
+  }
+];
+
+// ── STATE MANAGEMENT ──
+let selectedSector = null;
+let selectedConsumers = [];
+let currentCategory = null;
+
+// ── RENDER SECTOR BUTTONS ──
+const sectorsQuick = document.getElementById('sectorsQuick');
+sectorsData.forEach(sector => {
+  const btn = document.createElement('button');
+  btn.className = 'sector-quick-btn';
+  btn.innerHTML = `
+    <span class="sector-emoji-small">${sector.emoji}</span>
+    <span>${sector.name}</span>
+  `;
+  btn.onclick = () => selectSector(sector);
+  sectorsQuick.appendChild(btn);
+});
+
+// ── SELECT SECTOR ──
+function selectSector(sector) {
+  selectedSector = sector;
+  
+  // Update button states
+  document.querySelectorAll('.sector-quick-btn').forEach((btn, i) => {
+    btn.classList.toggle('active', i === sector.id - 1);
+  });
+  
+  // Show context
+  document.getElementById('contextPanel').classList.add('active');
+  document.getElementById('contextEmoji').textContent = sector.emoji;
+  document.getElementById('contextSector').textContent = sector.name;
+  document.getElementById('contextComponent').textContent = sector.component;
+  document.getElementById('problemText').textContent = sector.problem;
+  
+  // Show consumer categories
+  document.getElementById('consumerCategories').classList.add('active');
+  
+  // Smooth scroll
+  setTimeout(() => {
+    document.getElementById('consumerCategories').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 100);
+}
+
+// ── OPEN CONSUMERS MODAL ──
+function openConsumersModal(category) {
+  if (!selectedSector) return;
+  
+  currentCategory = category;
+  const modal = document.getElementById('consumersModal');
+  modal.classList.add('active');
+  
+  // Set header based on category
+  const icons = {
+    endUsers: '👥',
+    decisionMakers: '🎯',
+    influencers: '🌟'
+  };
+  
+  const titles = {
+    endUsers: 'Usuarios Finales',
+    decisionMakers: 'Decisores',
+    influencers: 'Influenciadores'
+  };
+  
+  const descriptions = {
+    endUsers: 'Personas que experimentan el problema directamente en su vida diaria',
+    decisionMakers: 'Quienes controlan presupuestos, aprueban soluciones y toman decisiones de adopción',
+    influencers: 'Expertos, medios y líderes de opinión que moldean percepciones y tendencias'
+  };
+  
+  document.getElementById('modalCategoryIcon').textContent = icons[category];
+  document.getElementById('modalCategoryTitle').textContent = titles[category];
+  document.getElementById('modalCategoryContext').textContent = `${selectedSector.emoji} ${selectedSector.name} — ${descriptions[category]}`;
+  
+  // Render consumers
+  const grid = document.getElementById('consumersGrid');
+  grid.innerHTML = '';
+  
+  const consumers = selectedSector.consumers[category];
+  consumers.forEach(consumer => {
+    const card = document.createElement('div');
+    card.className = 'consumer-card';
+    
+    // Check if already selected
+    const isSelected = selectedConsumers.some(c => c.name === consumer.name && c.category === category);
+    if (isSelected) card.classList.add('selected');
+    
+    card.innerHTML = `
+      <span class="consumer-icon">${consumer.icon}</span>
+      <h4 class="consumer-name">${consumer.name}</h4>
+      <p class="consumer-description">${consumer.description}</p>
+      <div class="consumer-pain-points">
+        ${consumer.pains.map(pain => `<span class="pain-tag">${pain}</span>`).join('')}
+      </div>
+    `;
+    
+    card.onclick = () => toggleConsumer(consumer, category, card);
+    grid.appendChild(card);
+  });
+  
+  document.body.style.overflow = 'hidden';
+}
+
+// ── TOGGLE CONSUMER SELECTION ──
+function toggleConsumer(consumer, category, cardElement) {
+  const existingIndex = selectedConsumers.findIndex(c => c.name === consumer.name && c.category === category);
+  
+  if (existingIndex >= 0) {
+    // Deselect
+    selectedConsumers.splice(existingIndex, 1);
+    cardElement.classList.remove('selected');
+  } else {
+    // Select
+    selectedConsumers.push({
+      ...consumer,
+      category,
+      sector: selectedSector.name,
+      sectorEmoji: selectedSector.emoji
+    });
+    cardElement.classList.add('selected');
+  }
+  
+  updateEcosystemMap();
+}
+
+// ── UPDATE ECOSYSTEM MAP ──
+function updateEcosystemMap() {
+  if (selectedConsumers.length > 0) {
+    const map = document.getElementById('ecosystemMap');
+    map.classList.add('active');
+    
+    document.getElementById('ecosystemProblem').textContent = selectedSector.problem;
+    
+    const list = document.getElementById('ecosystemConsumersList');
+    list.innerHTML = selectedConsumers.map(consumer => `
+      <div class="ecosystem-consumer-card">
+        <span class="ecosystem-consumer-icon">${consumer.icon}</span>
+        <div class="ecosystem-consumer-info">
+          <div class="ecosystem-consumer-name">${consumer.name}</div>
+          <div class="ecosystem-consumer-type">${getCategoryLabel(consumer.category)}</div>
+        </div>
+      </div>
+    `).join('');
+    
+    // Scroll to map after short delay
+    setTimeout(() => {
+      map.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }, 300);
+  }
+}
+
+function getCategoryLabel(category) {
+  const labels = {
+    endUsers: 'Usuario Final',
+    decisionMakers: 'Decisor',
+    influencers: 'Influenciador'
+  };
+  return labels[category] || category;
+}
+
+// ── CLOSE MODAL ──
+function closeModal() {
+  document.getElementById('consumersModal').classList.remove('active');
+  document.body.style.overflow = 'auto';
+}
+
+// ── RESET SELECTION ──
+function resetSelection() {
+  selectedConsumers = [];
+  document.getElementById('ecosystemMap').classList.remove('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ── CONTINUE TO PROPOSAL ──
+function continueToProposal() {
+  if (selectedConsumers.length === 0) {
+    alert('Por favor selecciona al menos un consumidor para continuar.');
+    return;
+  }
+  
+  const summary = `
+Has mapeado tu ecosistema:
+
+Sector: ${selectedSector.emoji} ${selectedSector.name}
+Problema: ${selectedSector.problem}
+
+Consumidores identificados (${selectedConsumers.length}):
+${selectedConsumers.map(c => `• ${c.icon} ${c.name} (${getCategoryLabel(c.category)})`).join('\n')}
+
+¡Excelente! Ahora tienes claridad sobre quiénes experimentan el problema. 
+
+En el Módulo Cria desarrollarás tu propuesta diferenciada específica para este ecosistema.
+  `;
+  
+  alert(summary);
+}
+
+// Close modal on background click
+document.getElementById('consumersModal').addEventListener('click', (e) => {
+  if (e.target.id === 'consumersModal') {
+    closeModal();
+  }
+});
+</script>
+
+</body>
+</html>
